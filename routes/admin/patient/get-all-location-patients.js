@@ -1,4 +1,4 @@
-const { getPopulatedDataWithLimit } = require("../../../helpers");
+const { getPopulatedDataWithLimit, getCount } = require("../../../helpers");
 const Joi = require("joi");
 
 const newSchema = Joi.object({
@@ -20,8 +20,13 @@ const getAllLocationPatients = async (req, res) => {
       page,
       6
     );
+
+    const length = await getCount("patient", {
+      production: { $ne: true },
+    });
     return res.status(200).send({
       status: 200,
+      length,
       allLocationPatients,
     });
   } catch (e) {

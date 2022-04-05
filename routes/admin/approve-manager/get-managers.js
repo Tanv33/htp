@@ -4,6 +4,7 @@ const {
   find,
   getPopulatedData,
   getPopulatedDataWithLimit,
+  getCount,
 } = require("../../../helpers");
 
 const schema = Joi.object({
@@ -26,7 +27,10 @@ const getManagers = async (req, res) => {
       page,
       6
     );
-    return res.status(200).send({ status: 200, managersArray });
+    const length = await getCount("user", {
+      type: _id,
+    });
+    return res.status(200).send({ status: 200,length, managersArray });
   } catch (e) {
     res.status(400).send({ status: 400, message: e.message });
   }
