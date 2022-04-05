@@ -32,7 +32,7 @@ const searchPatient = async (req, res) => {
     let queryArr = [];
     const manager = await findOne("user", {
       _id: req.userId,
-    });aaaaaaaa
+    });
     const { manager_location } = manager;
     if (first_name) {
       queryArr = await getPopulatedData(
