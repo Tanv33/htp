@@ -1,4 +1,5 @@
 const express = require("express");
+const { adminVerification } = require("../../middleware/admin-verification");
 const router = express.Router();
 const addTestType = require("./add-test-type");
 const addUserTestType = require("./add-user-test-type");
@@ -11,10 +12,10 @@ const updateUserTestType = require("./update-user-test-type");
 
 // ROUTES
 // test Type => Admin
-router.get("/get-test-types", getTestType);
-router.post("/add-test-type", addTestType);
-router.delete("/delete-test-type", deleteTestType);
-router.put("/update-test-type/:id", updateTestType);
+router.get("/get-test-types", adminVerification, getTestType);
+router.post("/add-test-type", adminVerification, addTestType);
+router.delete("/delete-test-type", adminVerification, deleteTestType);
+router.put("/update-test-type/:id", adminVerification, updateTestType);
 
 // test Type => User
 router.get("/get-user-test-type", getUserTestType);
