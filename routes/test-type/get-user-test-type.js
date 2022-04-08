@@ -21,6 +21,7 @@ const getUserTestType = async (req, res) => {
         {
           $match: {
             type: { $in: bothManagers },
+            status: "Active",
           },
         },
         {
@@ -28,6 +29,7 @@ const getUserTestType = async (req, res) => {
             full_name: 1,
             mid: 1,
             pmid: 1,
+            status:1,
             user_test_type: 1,
           },
         },
