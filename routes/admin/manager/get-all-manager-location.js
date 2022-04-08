@@ -1,26 +1,14 @@
-const Joi = require("joi");
-const {
-  findOne,
-  getCount,
-  getPopulatedDataWithLimit,
-} = require("../../../helpers");
-const schema = Joi.object({
-  page: Joi.string().required(),
-});
+const { findOne, getCount, getPopulatedData } = require("../../../helpers");
+
 const getAllManagerlocations = async (req, res) => {
   try {
-    await schema.validateAsync(req.query);
-    const { page } = req.query;
     const manager = await findOne("userType", { type: "Manager" });
     const { _id } = manager;
-    const locations = await getPopulatedDataWithLimit(
+    const locations = await getPopulatedData(
       "location",
       { user_type: _id },
       "created_by",
-      "full_name lab_name lab_address",
-      { _id: -1 },
-      page,
-      6
+      "full_name lab_name lab_address"
     );
     for (let i = 0; i < locations.length; i++) {
       const noOfPatients = await getCount("patient", {

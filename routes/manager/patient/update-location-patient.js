@@ -25,10 +25,14 @@ const schema = Joi.object({
   us_id: Joi.string(),
   us_id_no: Joi.string(),
   ssn: Joi.string(),
-  is_tested: Joi.string(),
-  test_type: Joi.object(),
   pid: Joi.string(),
   bar_code: Joi.string(),
+  is_review: Joi.string(),
+  is_tested: Joi.string(),
+  test_type: Joi.object(),
+  patient_result: Joi.string(),
+  tested_date: Joi.date(),
+  patient_result_date: Joi.date(),
 });
 
 const updateLocationPatient = async (req, res) => {
