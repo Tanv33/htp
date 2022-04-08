@@ -6,6 +6,7 @@ const {
   generateRandomNumber,
   getDropBoxLink,
   todayDateFormat,
+  insertNewDocument,
 } = require("../../../helpers");
 const { send_email } = require("../../../lib");
 const testResultSignOff = require("../../../public/pdf/testResultSignoff");
@@ -146,12 +147,16 @@ const firePatientWithCsv = async (req, res) => {
         // io.emit("csv", {
         //   message: "100% Done",
         // });
+        const uploadHistory = await insertNewDocument("uploadHistory", {
+          total_result: fileData.length,
+          uploaded_result: newData.length,
+          duplicate_result: duplicate,
+          created_by: req.userId,
+        });
         return res.status(200).send({
           status: 200,
-          message: "CSV file uploaded successfully ",
-          givenData: fileData.length,
-          acceptedData: newData.length,
-          duplicate,
+          message: "CSV file uploaded successfully",
+          uploadHistory,
         });
       }
     }

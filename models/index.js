@@ -12,5 +12,6 @@ db.testType = require("./test-type");
 db.NumberGeneratorModel = require("./number-generator-model");
 db.location = require("./location");
 db.verification = require("./verification-key");
+db.uploadHistory = require("./upload history");
 
 module.exports = db;
