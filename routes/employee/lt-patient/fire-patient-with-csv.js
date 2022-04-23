@@ -29,7 +29,7 @@ const firePatientWithCsv = async (req, res) => {
     const newData = Array.from(new Set(fileData.map(JSON.stringify))).map(
       JSON.parse
     );
-    console.log(newData);
+    console.log("newData", newData);
     for (let index = 0; index < newData.length; index++) {
       if (
         !newData[index]?.order_no ||
@@ -152,6 +152,37 @@ const firePatientWithCsv = async (req, res) => {
           uploaded_result: newData.length,
           duplicate_result: duplicate,
           created_by: req.userId,
+        });
+        const duplicatePids = fileData
+          .map((v) => v.pid)
+          .filter((v, i, vIds) => vIds.indexOf(v) !== i);
+        const duplicateOrder_no = fileData
+          .map((v) => v.order_no)
+          .filter((v, i, vOrder) => vOrder.indexOf(v) !== i);
+        const duplicatePatient_result = fileData
+          .map((v) => v.patient_result)
+          .filter((v, i, vPatient) => vPatient.indexOf(v) !== i);
+        const duplicates = fileData.filter((obj) => {
+          return (
+            duplicatePids.includes(obj.pid) &&
+            duplicateOrder_no.includes(obj.order_no) &&
+            duplicatePatient_result.includes(obj.patient_result)
+          );
+        });
+        console.log("duplicates", duplicates);
+        const duplicateCsvData = Array.from(
+          new Set(duplicates.map(JSON.stringify))
+        ).map(JSON.parse);
+        console.log(duplicateCsvData);
+        duplicateCsvData.map(async (obj) => {
+          const check = await insertNewDocument("duplicateCsvLts", {
+            csv_id: uploadHistory._id,
+            pid: obj.pid,
+            patient_result: obj.patient_result,
+            order_no: obj.order_no,
+            created_by: req.userId,
+          });
+          console.log(check);
         });
         return res.status(200).send({
           status: 200,

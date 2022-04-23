@@ -13,5 +13,6 @@ db.NumberGeneratorModel = require("./number-generator-model");
 db.location = require("./location");
 db.verification = require("./verification-key");
 db.uploadHistory = require("./upload history");
+db.duplicateCsvLts = require("./duplicate-csv-lt");
 
 module.exports = db;
