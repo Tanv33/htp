@@ -31,12 +31,12 @@ const getEmployees = async (req, res) => {
       page,
       6
     );
-    const lengrth = await getCount("user", {
+    const length = await getCount("user", {
       mid: manager.mid,
       _id: { $ne: req.userId },
       type: { $nin: [vendorType._id, ProductionManagerType._id] },
     });
-    return res.status(200).send({ status: 200, lengrth, employeeArray });
+    return res.status(200).send({ status: 200, length, employeeArray });
   } catch (e) {
     res.status(400).send({ status: 400, message: e.message });
   }
