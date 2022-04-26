@@ -34,7 +34,7 @@ router.use(
   productionManager
 );
 router.post("/rough", upload.single("logo"), (req, res) => {
-  console.log(req.body);
+  console.log("req.body", req.body);
   return res.status(200).send(req.body);
 });
 
