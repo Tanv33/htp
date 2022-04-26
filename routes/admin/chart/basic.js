@@ -1,4 +1,5 @@
 const { getAggregate, findOne, getCount, find } = require("../../../helpers");
+const { ObjectID } = require("../../../types");
 
 const basicChart = async (req, res) => {
   try {
@@ -43,6 +44,33 @@ const basicChart = async (req, res) => {
       secondChart.push(obj);
     }
 
+    // Graph 2 Modifyed
+    // const thirdy = await getAggregate("location", [
+    //   { $match: {} },
+    //   // {
+    //   //   $group: {
+    //   //     _id: "$_id",
+    //   //     medicalProfession:{}
+    //   //   },
+    //   // },
+    //   {
+    //     $lookup: {
+    //       from: "users",
+    //       // localField: "_id",
+    //       // foreignField: "employee_location",
+    //       pipline: [
+    //         {
+    //           $match: {},
+    //         },
+    //       ],
+    //       as: "noOfEmployee",
+    //     },
+    //   },
+    //   // {
+    //   //   $project: { location_name: 1 },
+    //   // },
+    // ]);
+
     // Graph 3
     const thirdChart = await getAggregate("patient", [
       {
@@ -63,6 +91,7 @@ const basicChart = async (req, res) => {
     return res
       .status(200)
       .send({ status: 200, firstChart, secondChart, thirdChart });
+    // return res.status(200).send({ status: 200, length: thirdy.length, thirdy });
   } catch (e) {
     console.log(e);
     return res.status(400).send({ status: 400, message: e.message });
