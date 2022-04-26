@@ -5,6 +5,7 @@ const {
   getCount,
   findOneAndPopulate,
 } = require("../../../helpers");
+const { ObjectID } = require("../../../types");
 
 const schema = Joi.object({
   from: Joi.date().required(),
@@ -48,25 +49,71 @@ const dateChart = async (req, res) => {
     const labTechnicican = await findOne("userType", {
       type: "Lab Technician",
     });
-    let secondChart = [];
-    for (let i = 0; i < manager_location.length; i++) {
-      const noOfLabTechnician = await getCount("user", {
-        employee_location: manager_location[i],
-        type: labTechnicican._id,
-        createdAt: { $gte: new Date(from), $lte: new Date(to) },
-      });
-      const noOfMedicalProfession = await getCount("user", {
-        employee_location: manager_location[i]?._id,
-        type: medicalProfession._id,
-        createdAt: { $gte: new Date(from), $lte: new Date(to) },
-      });
-      let obj = {};
-      obj.location_id = manager_location[i]?._id;
-      obj.location_name = manager_location[i]?.location_name;
-      obj.medicalProfession = noOfMedicalProfession;
-      obj.labTechnicican = noOfLabTechnician;
-      secondChart.push(obj);
-    }
+    // Modifyed
+    const secondChart = await getAggregate("location", [
+      { $match: { created_by: ObjectID(req.userId) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "employee_location",
+          as: "noOfEmployees",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          location_id: "$_id",
+          location_name: 1,
+          medicalProfession: {
+            $sum: {
+              $map: {
+                input: "$noOfEmployees",
+                as: "noOfEmployees",
+                in: {
+                  $cond: [
+                    {
+                      $and: [
+                        {
+                          $eq: ["$$noOfEmployees.type", medicalProfession._id],
+                        },
+                        { $gte: ["$$noOfEmployees.createdAt", new Date(from)] },
+                        { $lte: ["$$noOfEmployees.createdAt", new Date(to)] },
+                      ],
+                    },
+                    1,
+                    0,
+                  ],
+                },
+              },
+            },
+          },
+          labTechnicican: {
+            $sum: {
+              $map: {
+                input: "$noOfEmployees",
+                as: "noOfEmployees",
+                in: {
+                  $cond: [
+                    {
+                      $and: [
+                        {
+                          $eq: ["$$noOfEmployees.type", labTechnicican._id],
+                        },
+                        { $gte: ["$$noOfEmployees.createdAt", new Date(from)] },
+                        { $lte: ["$$noOfEmployees.createdAt", new Date(to)] },
+                      ],
+                    },
+                    1,
+                    0,
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
 
     // Graph 3
     const thirdChart = await getAggregate("patient", [

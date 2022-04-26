@@ -18,32 +18,12 @@ const basicChart = async (req, res) => {
       },
     ]);
 
-    // // Graph 2
     const medicalProfession = await findOne("userType", {
       type: "Medical Profession",
     });
-    const labTechnicican = await findOne("userType", {
+    const labTechnician = await findOne("userType", {
       type: "Lab Technician",
     });
-    // let secondChart = [];
-    // const looping = await find("location", {});
-    // for (let i = 0; i < looping.length; i++) {
-    //   const noOfLabTechnician = await getCount("user", {
-    //     employee_location: looping[i]?._id,
-    //     type: labTechnicican._id,
-    //   });
-    //   const noOfMedicalProfession = await getCount("user", {
-    //     employee_location: looping[i]?._id,
-    //     type: medicalProfession._id,
-    //   });
-    //   let obj = {};
-    //   obj.location_id = looping[i]?._id;
-    //   obj.location_name = looping[i]?.location_name;
-    //   obj.medicalProfession = noOfMedicalProfession;
-    //   obj.labTechnicican = noOfLabTechnician;
-    //   secondChart.push(obj);
-    // }
-
     // Graph 2 Modifyed
     const secondChart = await getAggregate("location", [
       { $match: {} },
@@ -73,14 +53,14 @@ const basicChart = async (req, res) => {
               },
             },
           },
-          labTechnicican: {
+          labTechnician: {
             $sum: {
               $map: {
                 input: "$noOfEmployees",
                 as: "noOfEmployees",
                 in: {
                   $cond: [
-                    { $eq: ["$$noOfEmployees.type", labTechnicican._id] },
+                    { $eq: ["$$noOfEmployees.type", labTechnician._id] },
                     1,
                     0,
                   ],

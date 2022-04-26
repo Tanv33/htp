@@ -4,6 +4,7 @@ const {
   getCount,
   findOneAndPopulate,
 } = require("../../../helpers");
+const { ObjectID } = require("../../../types");
 
 const basicChart = async (req, res) => {
   try {
@@ -34,26 +35,62 @@ const basicChart = async (req, res) => {
     const medicalProfession = await findOne("userType", {
       type: "Medical Profession",
     });
-    const labTechnicican = await findOne("userType", {
+    const labTechnician = await findOne("userType", {
       type: "Lab Technician",
     });
-    let secondChart = [];
-    for (let i = 0; i < manager_location.length; i++) {
-      const noOfLabTechnician = await getCount("user", {
-        employee_location: manager_location[i],
-        type: labTechnicican._id,
-      });
-      const noOfMedicalProfession = await getCount("user", {
-        employee_location: manager_location[i]?._id,
-        type: medicalProfession._id,
-      });
-      let obj = {};
-      obj.location_id = manager_location[i]?._id;
-      obj.location_name = manager_location[i]?.location_name;
-      obj.medicalProfession = noOfMedicalProfession;
-      obj.labTechnicican = noOfLabTechnician;
-      secondChart.push(obj);
-    }
+    // Modifyed
+    const secondChart = await getAggregate("location", [
+      {
+        $match: {
+          created_by: ObjectID(req.userId),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "employee_location",
+          as: "noOfEmployees",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          location_id: "$_id",
+          location_name: 1,
+          medicalProfession: {
+            $sum: {
+              $map: {
+                input: "$noOfEmployees",
+                as: "noOfEmployees",
+                in: {
+                  $cond: [
+                    { $eq: ["$$noOfEmployees.type", medicalProfession._id] },
+                    1,
+                    0,
+                  ],
+                },
+              },
+            },
+          },
+          labTechnician: {
+            $sum: {
+              $map: {
+                input: "$noOfEmployees",
+                as: "noOfEmployees",
+                in: {
+                  $cond: [
+                    { $eq: ["$$noOfEmployees.type", labTechnician._id] },
+                    1,
+                    0,
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
 
     // Graph 3
     const thirdChart = await getAggregate("patient", [
