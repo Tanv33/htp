@@ -1,5 +1,9 @@
 const Joi = require("joi");
-const { findOne, updateDocument } = require("../../helpers");
+const {
+  findOne,
+  updateDocument,
+  findOneAndPopulate,
+} = require("../../helpers");
 const bcrypt = require("bcryptjs");
 
 const schema = Joi.object({
@@ -45,10 +49,17 @@ const updateProfile = async (req, res) => {
     if (password) {
       req.body.password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
     }
-    const updateUserInfo = await updateDocument("user", { _id }, req.body);
+    await updateDocument("user", { _id }, req.body);
+    const user = await findOneAndPopulate(
+      "user",
+      { _id },
+      "type",
+      "type status"
+    );
+    user.password = undefined;
     return res
       .status(200)
-      .send({ status: 200, message: "Profile Updated Successfully" });
+      .send({ status: 200, message: "Profile Updated Successfully", user });
   } catch (e) {
     console.log(e);
     return res.status(400).send({ status: 400, message: e.message });

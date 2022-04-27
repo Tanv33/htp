@@ -30,7 +30,7 @@ const dateChart = async (req, res) => {
     const medicalProfession = await findOne("userType", {
       type: "Medical Profession",
     });
-    const labTechnicican = await findOne("userType", {
+    const labTechnician = await findOne("userType", {
       type: "Lab Technician",
     });
     // Graph 2 Modifyed
@@ -72,7 +72,7 @@ const dateChart = async (req, res) => {
               },
             },
           },
-          labTechnicican: {
+          labTechnician: {
             $sum: {
               $map: {
                 input: "$noOfEmployees",
@@ -82,7 +82,7 @@ const dateChart = async (req, res) => {
                     {
                       $and: [
                         {
-                          $eq: ["$$noOfEmployees.type", labTechnicican._id],
+                          $eq: ["$$noOfEmployees.type", labTechnician._id],
                         },
                         { $gte: ["$$noOfEmployees.createdAt", new Date(from)] },
                         { $lte: ["$$noOfEmployees.createdAt", new Date(to)] },
