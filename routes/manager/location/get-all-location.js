@@ -24,12 +24,12 @@ const getAllLocation = async (req, res) => {
           from: "patients",
           localField: "_id",
           foreignField: "location_id",
-          as: "noOfPatient",
+          as: "noOfPatients",
         },
       },
       {
         $addFields: {
-          noOfPatient: { $size: "$noOfPatient" },
+          noOfPatients: { $size: "$noOfPatients" },
         },
       },
       {
