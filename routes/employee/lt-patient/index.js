@@ -7,6 +7,7 @@ const getFirePatientByUploadId = require("./get-fire-patient-by-upload-id copy")
 const getTestedtPatient = require("./get-tested-patient");
 const getUploadHistory = require("./get-upload-history");
 const searchPatient = require("./search-patient");
+const searchploadHistory = require("./search-upload-history");
 
 const router = express.Router();
 
@@ -17,5 +18,6 @@ router.get("/search", searchPatient);
 router.get("/get-history", getUploadHistory);
 router.get("/duplicate/:id", getFirePatientByUploadId);
 router.get("/get-duplicates", getAllDuplicatePatient);
+router.get("/search-history", searchploadHistory);
 
 module.exports = router;
